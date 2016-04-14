@@ -13,12 +13,23 @@
     "require": {
         "php": ">=5.4.0",
         "symfony/framework-bundle": ">=2.0",
-        "Beryllium/CacheBundle": "0.1.*"
+        "practo/buzz-bundle": "dev-master",
+        "practo/buzz": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/practo/Buzz.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/practo/GremoBuzzBundle.git"
+        }
+    ],
     "autoload": {
-      "psr-0": {
-        "Practo\\HeimdallBundle\\": ""
-      }
+        "psr-0": {
+            "Practo\\HeimdallBundle\\": ""
+        }
     },
     "target-dir": "Practo/HeimdallBundle"
 }
