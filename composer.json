@@ -1,0 +1,24 @@
+{
+    "name": "practo/heimdall-bundle",
+    "description": "Symfony2 Bundle for Practo Heimdall",
+    "keywords": ["practo", "heimdall"],
+    "type": "symfony-bundle",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Rajaram",
+            "email": "rajaram@practo.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/framework-bundle": ">=2.0",
+        "Beryllium/CacheBundle": "0.1.*"
+    },
+    "autoload": {
+      "psr-0": {
+        "Practo\\HeimdallBundle\\": ""
+      }
+    },
+    "target-dir": "Practo/HeimdallBundle"
+}
