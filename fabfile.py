@@ -71,7 +71,6 @@ def php_coding_check():
 @sniff(severity='major', timing='fast')
 def check_var_dump():
     info('Checking for var_dump, echo or die statements...')
-    #return local("! git grep 'var_dump'")
     return local(
         "! git ls-files -z | "
         "grep -PZz '\.php$' | "
