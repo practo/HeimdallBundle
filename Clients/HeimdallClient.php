@@ -3,6 +3,7 @@
 namespace Practo\HeimdallBundle\Clients;
 
 use \Buzz\Browser;
+use \Buzz\Client\Curl;
 use \Memcached;
 
 /**
@@ -16,31 +17,26 @@ class HeimdallClient
     protected $buzz;
     protected $cache;
 
+    const CACHE_KEY_PREFIX = 'heimdall_feature_set_';
+
     /**
      * Constructor
      *
      * @param string    $productName  - Product Name
      * @param string    $apiUrl       - Heimdall API Base URL
      * @param string    $apiSecret    - Heimdall API Secret
-     * @param Browser   $buzz         - Buzz
-     * @param Memcached $cache        - Memcached cache instance
      * @param array     $cacheServers - Array of key-values pairs of host & port
      */
-    public function __construct($productName, $apiUrl, $apiSecret,
-        Browser $buzz,
-        Memcached $cache,
-        $cacheServers)
+    public function __construct($productName, $apiUrl, $apiSecret, $cacheServers)
     {
         $this->productName = $productName;
         $this->apiUrl = $apiUrl;
         $this->apiSecret = $apiSecret;
-        $this->buzz = $buzz;
-        $this->cache = $cache;
-        if (empty($this->cache->getServerList())) {
-            foreach ($cacheServers as $host => $port) {
-                $server = [$host, $port];
-                $this->cache->addServers(array($server));
-            }
+        $this->buzz = new Browser(new Curl());
+        $this->cache = new Memcached();
+        foreach ($cacheServers as $host => $port) {
+            $server = [$host, $port];
+            $this->cache->addServers(array($server));
         }
     }
 
@@ -59,7 +55,7 @@ class HeimdallClient
      */
     public function getFromCache($primaryKey)
     {
-        $cacheKey = 'heimdall_feature_set_' . $primaryKey;
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
 
         return $this->cache->get($cacheKey);
     }
@@ -100,7 +96,7 @@ class HeimdallClient
      */
     public function getEnabledFeatureSet($primaryKey, $requestParams, $resetCache = false)
     {
-        $cacheKey = 'heimdall_feature_set_' . $primaryKey;
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
 
         if (!$resetCache) {
             $featureSet = $this->getFromCache($cacheKey);
