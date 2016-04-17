@@ -8,12 +8,15 @@
         {
             "name": "Rajaram",
             "email": "rajaram@practo.com"
+        },
+        {
+            "name": "Akshay Bazad",
+            "email": "akshay.bz@practo.com"
         }
     ],
     "require": {
         "php": ">=5.4.0",
         "symfony/framework-bundle": ">=2.0",
-        "practo/buzz-bundle": "dev-master",
         "practo/buzz": "dev-master"
     },
     "repositories": [

@@ -22,10 +22,10 @@ class HeimdallClient
     /**
      * Constructor
      *
-     * @param string    $productName  - Product Name
-     * @param string    $apiUrl       - Heimdall API Base URL
-     * @param string    $apiSecret    - Heimdall API Secret
-     * @param array     $cacheServers - Array of key-values pairs of host & port
+     * @param string $productName  - Product Name
+     * @param string $apiUrl       - Heimdall API Base URL
+     * @param string $apiSecret    - Heimdall API Secret
+     * @param array  $cacheServers - Array of key-values pairs of host & port
      */
     public function __construct($productName, $apiUrl, $apiSecret, $cacheServers)
     {
