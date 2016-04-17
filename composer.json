@@ -20,10 +20,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/practo/Buzz.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/practo/GremoBuzzBundle.git"
         }
     ],
     "autoload": {
