@@ -1,18 +1,8 @@
-parameters:
-  heimdall.product_name: %heimdall.product_name%
-  heimdall.api_secret: %heimdall.api_secret%
-  heimdall.base_uri: %heimdall.base_uri%
-  heimdall.cache.servers: %heimdall.cache.servers%
-
 services:
-  practo_heimdall.cache_client:
-    class: Memcached
   practo_heimdall.heimdall_client:
     class: Practo\HeimdallBundle\Clients\HeimdallClient
     arguments:
       - %heimdall.product_name%
       - %heimdall.base_uri%
       - %heimdall.api_secret%
-      - @buzz
-      - @practo_heimdall.cache_client
-      - %heimdall.cache.servers%
+      - %heimdall.cache_servers%
