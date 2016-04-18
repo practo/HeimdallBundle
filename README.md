@@ -75,6 +75,7 @@ heimdall.cache_servers:
 
 Version Control
 ---------------
+
 There are no release tags for this bundle. If you want to update, please use commit references.
 
 * Update commit reference in your `composer.lock`:
