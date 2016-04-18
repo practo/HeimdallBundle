@@ -1,17 +1,43 @@
 <?php
+
 namespace Practo\HeimdallBundle\Clients;
 
+use \Buzz\Browser;
+use \Buzz\Client\Curl;
+use \Memcached;
+
+/**
+ * Heimdall Client
+ */
 class HeimdallClient
 {
-    protected $apiKey;
-    protected $cache;
     protected $productName;
+    protected $apiUrl;
+    protected $apiSecret;
+    protected $buzz;
+    protected $cache;
 
-    public function __construct($productName, $apiKey, $cache)
+    const CACHE_KEY_PREFIX = 'heimdall_feature_set_';
+
+    /**
+     * Constructor
+     *
+     * @param string $productName  - Product Name
+     * @param string $apiUrl       - Heimdall API Base URL
+     * @param string $apiSecret    - Heimdall API Secret
+     * @param array  $cacheServers - Array of key-values pairs of host & port
+     */
+    public function __construct($productName, $apiUrl, $apiSecret, $cacheServers)
     {
         $this->productName = $productName;
-        $this->apiKey = $apiKey;
-        $this->cache = $cache;
+        $this->apiUrl = $apiUrl;
+        $this->apiSecret = $apiSecret;
+        $this->buzz = new Browser(new Curl());
+        $this->cache = new Memcached();
+        foreach ($cacheServers as $host => $port) {
+            $server = [$host, $port];
+            $this->cache->addServers(array($server));
+        }
     }
 
     protected function generateNonce()
@@ -20,55 +46,100 @@ class HeimdallClient
             str_repeat('abcdefghijklmnopqrstuvwxyz0123456789', 3)), 0, 20);
     }
 
-    public function post($feature_name, $primary_key, $request_params) {
-        $cacheKey = 'heimdall_feature_set_' . $primary_key;
-        $featureSet = $this->cache->get($cacheKey);
-        $featureSet = json_decode($featureSet, true);
+    /**
+     * Searches the heimdall cache for the specified $primaryKey
+     *
+     * @param string $primaryKey - Cache Key
+     *
+     * @return string|false
+     */
+    public function getFromCache($primaryKey)
+    {
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
 
-        if (!$featureSet) {
-            try {
-                $nonce = $this->generateNonce();
-                $heimdallBaseUri = $this->_heimdall_base_uri;
-                $api_secret_key = $this->_heimdall_api_key;
-                $auth_token = hash('sha256', $api_secret_key.$nonce);
-                $api_url = $heimdallBaseUri.'/get_feature_set_with_status';
-                $ch = curl_init($api_url);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt ($ch , CURLOPT_RETURNTRANSFER , 1 );
-                $headers = array(
-                    'nonce: '.$nonce,
-                    'X-AUTH-TOKEN: '.$auth_token,
-                    'Content-type: application/json'
-                );
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                $data = array();
-                $data['product_name'] = $this->productName;
-                $data['user_data'] = $request_params;
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                $featureSet = curl_exec($ch);
-                $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $errorMessage = '';
-                if (false !== $featureSet) {
-                    $featureSet = json_decode($featureSet, True);
-                    if($responseCode === 200){
-                        $practoCache->set('heimdall_feature_set_'.$primary_key, json_encode($featureSet), 3600);
-                    }
-                    else{
-                        $errorMessage = $responseCode.' '.$responseCode.': '. $featureSet['message'];
-                    }
-                }
-                else{
-                    $errorMessage = curl_error($ch);
-                }
-                curl_close($ch);
-                if($errorMessage){
-                    throw new \Exception($errorMessage);
-                }
+        return $this->cache->get($cacheKey);
+    }
 
-            } catch (\Exception $e) {
-                throw new \Exception("Heimdall Failed: " . $e->getMessage());
+     /**
+     * Checks if a heimdall feature is enabled
+     *
+     * @param string  $featureName   - Name of the feature
+     * @param string  $primaryKey    - Primary key of the cache
+     * @param array   $requestParams - User Data parameters to send to Heimdall
+     * @param boolean $resetCache    - Will fetch directly from Heimdall API if true
+     *
+     * @return boolean - Whether or not the feature is enabled
+     */
+    public function isFeatureEnabled($featureName, $primaryKey, $requestParams, $resetCache = false)
+    {
+        if (empty($featureName)) {
+            throw new \Exception('Feature name was empty.');
+        }
+        if (empty($primaryKey)) {
+            throw new \Exception('Primary key was empty.');
+        }
+
+        $featureSet = $this->getEnabledFeatureSet($primaryKey, $requestParams, $resetCache);
+
+        return (isset($featureSet[$featureName]) && $featureSet[$featureName]);
+    }
+
+
+    /**
+     * Returns the complete feature set for the app using $requestParameters
+     *
+     * @param string  $primaryKey    - Primary key of the cache
+     * @param array   $requestParams - User Data parameters to send to Heimdall
+     * @param boolean $resetCache    - Will fetch directly from Heimdall API if true
+     *
+     * @return array
+     */
+    public function getEnabledFeatureSet($primaryKey, $requestParams, $resetCache = false)
+    {
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
+
+        if (!$resetCache) {
+            $featureSet = $this->getFromCache($cacheKey);
+
+            if ($featureSet) {
+                return json_decode($featureSet, true);
             }
         }
-        return (isset($featureSet[$featureName]) && $featureSet[$featureName]);
+
+        $nonce = $this->generateNonce();
+
+        $apiUrl = $this->apiUrl . '/get_feature_set_with_status';
+
+        $headers = [
+            'nonce'        => $nonce,
+            'X-AUTH-TOKEN' => hash('sha256', $this->apiSecret . $nonce),
+            'Content-type' => 'application/json'
+        ];
+
+        $queryParams = json_encode([
+            'product_name' => $this->productName,
+            'user_data'    => $requestParams
+        ]);
+
+        try {
+            $response = $this->buzz->post($apiUrl, $headers, $queryParams);
+            $content = $response->getContent();
+
+            if (!$response->isOk()) {
+                throw new \Exception("API Responded with - {$content}");
+            }
+
+            $featureSet = json_decode($content, true);
+
+            if (!is_array($featureSet)) {
+                throw new \Exception("API Responded with - {$content}");
+            }
+
+            $this->cache->set($cacheKey, $content, 3600);
+
+            return $featureSet;
+        } catch (\Exception $e) {
+            throw new \Exception('Heimdall Failed: ' . $e->getMessage());
+        }
     }
 }

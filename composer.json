@@ -8,17 +8,27 @@
         {
             "name": "Rajaram",
             "email": "rajaram@practo.com"
+        },
+        {
+            "name": "Akshay Bazad",
+            "email": "akshay.bz@practo.com"
         }
     ],
     "require": {
         "php": ">=5.4.0",
         "symfony/framework-bundle": ">=2.0",
-        "Beryllium/CacheBundle": "0.1.*"
+        "practo/buzz": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/practo/Buzz.git"
+        }
+    ],
     "autoload": {
-      "psr-0": {
-        "Practo\\HeimdallBundle\\": ""
-      }
+        "psr-0": {
+            "Practo\\HeimdallBundle\\": ""
+        }
     },
     "target-dir": "Practo/HeimdallBundle"
 }

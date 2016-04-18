@@ -1,0 +1,26 @@
+language: php
+
+php:
+  - 5.5
+  - 7.0
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq python-pip
+  - sudo pip install fabric
+
+install:
+  - sudo pip install -r requirements.lock --download-cache $HOME/.pip-cache
+
+env: PYTHONPATH=.:$PYTHONPATH
+
+before_script:
+  - composer global require "squizlabs/php_codesniffer=1.5.6"
+  - chmod +x /home/travis/.composer/vendor/bin/phpcs
+  - export PATH=$PATH:/home/travis/.composer/vendor/bin
+  - (cd /home/travis/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards && test -d Symfony2 || git clone -q https://github.com/ajayrungta/Symfony2-coding-standard.git Symfony2)
+
+script: fab polish:ci
+
+cache:
+  apt: true
