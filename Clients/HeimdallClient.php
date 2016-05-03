@@ -11,7 +11,6 @@ use \Memcached;
  */
 class HeimdallClient
 {
-    protected $productName;
     protected $apiUrl;
     protected $apiSecret;
     protected $buzz;
@@ -22,14 +21,12 @@ class HeimdallClient
     /**
      * Constructor
      *
-     * @param string $productName  - Product Name
      * @param string $apiUrl       - Heimdall API Base URL
      * @param string $apiSecret    - Heimdall API Secret
      * @param array  $cacheServers - Array of key-values pairs of host & port
      */
-    public function __construct($productName, $apiUrl, $apiSecret, $cacheServers)
+    public function __construct($apiUrl, $apiSecret, $cacheServers)
     {
-        $this->productName = $productName;
         $this->apiUrl = $apiUrl;
         $this->apiSecret = $apiSecret;
         $this->buzz = new Browser(new Curl());
@@ -70,7 +67,7 @@ class HeimdallClient
      *
      * @return boolean - Whether or not the feature is enabled
      */
-    public function isFeatureEnabled($featureName, $primaryKey, $requestParams, $resetCache = false)
+    public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false)
     {
         if (empty($featureName)) {
             throw new \Exception('Feature name was empty.');
@@ -79,7 +76,7 @@ class HeimdallClient
             throw new \Exception('Primary key was empty.');
         }
 
-        $featureSet = $this->getEnabledFeatureSet($primaryKey, $requestParams, $resetCache);
+        $featureSet = $this->getEnabledFeatureSet($productName, $primaryKey, $requestParams, $resetCache);
 
         return (isset($featureSet[$featureName]) && $featureSet[$featureName]);
     }
@@ -94,7 +91,7 @@ class HeimdallClient
      *
      * @return array
      */
-    public function getEnabledFeatureSet($primaryKey, $requestParams, $resetCache = false)
+    public function getEnabledFeatureSet($productName, $primaryKey, $requestParams, $resetCache = false)
     {
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
 
@@ -117,7 +114,7 @@ class HeimdallClient
         ];
 
         $queryParams = json_encode([
-            'product_name' => $this->productName,
+            'product_name' => $productName,
             'user_data'    => $requestParams
         ]);
 
