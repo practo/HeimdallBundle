@@ -124,10 +124,11 @@ class HeimdallClient
     /**
      * Returns the complete feature set for the app using $requestParameters
      *
-     * @param string  $productName   - Name of the product of the feature
-     * @param string  $primaryKey    - Primary key of the cache
-     * @param array   $requestParams - User Data parameters to send to Heimdall
-     * @param boolean $resetCache    - Will fetch directly from Heimdall API if true
+     * @param string  $productName    - Name of the product of the feature
+     * @param array   $featureNameSet - List of feature names
+     * @param string  $primaryKey     - Primary key of the cache
+     * @param array   $requestParams  - User Data parameters to send to Heimdall
+     * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
      *
      * @return array
      */
