@@ -139,7 +139,7 @@ class HeimdallClient
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
         if (!$resetCache) {
-            $featureSet = $this->getFromCache($cacheKey);
+            $featureSet = $this->getFromCache($primaryKey, $featureNameSet);
 
             if ($featureSet) {
                 return json_decode($featureSet, true);
