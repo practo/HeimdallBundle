@@ -16,7 +16,7 @@ class HeimdallClient
     protected $buzz;
     protected $cache;
 
-    const CACHE_KEY_PREFIX = 'heimdall_feature_set_';
+    const CACHE_KEY_PREFIX = 'heimdall_feature_';
 
     /**
      * Constructor
@@ -50,9 +50,9 @@ class HeimdallClient
      *
      * @return string|false
      */
-    public function getFromCache($primaryKey)
+    public function getFromCache($primaryKey, $featureNameSet)
     {
-        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
         return $this->cache->get($cacheKey);
     }
@@ -70,6 +70,9 @@ class HeimdallClient
      */
     public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false)
     {
+        if (empty($productName)) {
+            throw new \Exception('Product name was empty.');
+        }
         if (empty($featureName)) {
             throw new \Exception('Feature name was empty.');
         }
@@ -77,9 +80,44 @@ class HeimdallClient
             throw new \Exception('Primary key was empty.');
         }
 
-        $featureSet = $this->getEnabledFeatureSet($productName, $primaryKey, $requestParams, $resetCache);
+        $featureNameSet = array($featureName);
+        $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
 
         return (isset($featureSet[$featureName]) && $featureSet[$featureName]);
+    }
+
+
+    /**
+     * get a set of heimdall features with status
+     *
+     * @param string  $productName    - Name of the product of the feature
+     * @param array   $featureNameSet - List of feature names
+     * @param string  $primaryKey     - Primary key of the cache
+     * @param array   $requestParams  - User Data parameters to send to Heimdall
+     * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
+     *
+     * @return array - list of features with status
+     */
+    public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
+    {
+        if (empty($productName)) {
+            throw new \Exception('Product name was empty.');
+        }
+        if (empty($featureNameSet)) {
+            throw new \Exception('Feature name set was empty.');
+        }
+        if (empty($primaryKey)) {
+            throw new \Exception('Primary key was empty.');
+        }
+
+        $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
+
+        foreach ($featureNameSet as $featureName) {
+            if (!isset($featureSet[$featureName])) {
+                $featureSet[$featureName] = false;
+            }
+        }
+        return $featureSet;
     }
 
 
@@ -93,9 +131,9 @@ class HeimdallClient
      *
      * @return array
      */
-    public function getEnabledFeatureSet($productName, $primaryKey, $requestParams, $resetCache = false)
+    public function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
-        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey;
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
         if (!$resetCache) {
             $featureSet = $this->getFromCache($cacheKey);
@@ -117,7 +155,8 @@ class HeimdallClient
 
         $queryParams = json_encode([
             'product_name' => $productName,
-            'user_data'    => $requestParams
+            'user_data'    => $requestParams,
+            'feature_set'  => $featureNameSet
         ]);
 
         try {
