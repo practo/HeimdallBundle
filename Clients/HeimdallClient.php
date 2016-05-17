@@ -46,7 +46,8 @@ class HeimdallClient
     /**
      * Searches the heimdall cache for the specified $primaryKey
      *
-     * @param string $primaryKey - Cache Key
+     * @param string $primaryKey     - Cache Key
+     * @param array  $featureNameSet - List of feature names
      *
      * @return string|false
      */
@@ -117,6 +118,7 @@ class HeimdallClient
                 $featureSet[$featureName] = false;
             }
         }
+
         return $featureSet;
     }
 
