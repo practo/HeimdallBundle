@@ -2,6 +2,8 @@
 
 namespace Practo\HeimdallBundle\Clients;
 
+use Symfony\Component\HttpFoundation\Request;
+
 use \Buzz\Browser;
 use \Buzz\Client\Curl;
 use \Memcached;
@@ -15,6 +17,7 @@ class HeimdallClient
     protected $apiSecret;
     protected $buzz;
     protected $cache;
+    protected $request;
 
     const CACHE_KEY_PREFIX = 'heimdall_feature_';
 
@@ -35,6 +38,16 @@ class HeimdallClient
             $server = [$host, $port];
             $this->cache->addServers(array($server));
         }
+    }
+
+    /**
+     * Set Request
+     *
+     * @param Request $request - Request
+     */
+    public function setRequest(Request $request = null)
+    {
+        $this->request = $request;
     }
 
     protected function generateNonce()
@@ -155,6 +168,10 @@ class HeimdallClient
             'X-AUTH-TOKEN' => hash('sha256', $this->apiSecret . $nonce),
             'Content-type' => 'application/json'
         ];
+
+        if ($this->request instanceof Request) {
+            $headers['User-Agent'] = $this->request->headers->get('User-Agent');
+        }
 
         $queryParams = json_encode([
             'product_name' => $productName,
