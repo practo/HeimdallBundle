@@ -132,8 +132,8 @@ class HeimdallClient
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
         }
-        if (empty($featureName)) {
-            throw new \Exception('Feature name was empty.');
+        if (empty($featureNameSet)) {
+            throw new \Exception('Feature names were empty.');
         }
         if (empty($primaryKey)) {
             throw new \Exception('Primary key was empty.');
