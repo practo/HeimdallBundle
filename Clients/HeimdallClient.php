@@ -84,16 +84,6 @@ class HeimdallClient
      */
     public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false)
     {
-        if (empty($productName)) {
-            throw new \Exception('Product name was empty.');
-        }
-        if (empty($featureName)) {
-            throw new \Exception('Feature name was empty.');
-        }
-        if (empty($primaryKey)) {
-            throw new \Exception('Primary key was empty.');
-        }
-
         $featureNameSet = array($featureName);
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
 
@@ -114,16 +104,6 @@ class HeimdallClient
      */
     public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
-        if (empty($productName)) {
-            throw new \Exception('Product name was empty.');
-        }
-        if (empty($featureNameSet)) {
-            throw new \Exception('Feature name set was empty.');
-        }
-        if (empty($primaryKey)) {
-            throw new \Exception('Primary key was empty.');
-        }
-
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
 
         foreach ($featureNameSet as $featureName) {
@@ -149,6 +129,18 @@ class HeimdallClient
      */
     public function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
+        if (empty($productName)) {
+            throw new \Exception('Product name was empty.');
+        }
+        if (empty($featureName)) {
+            throw new \Exception('Feature name was empty.');
+        }
+        if (empty($primaryKey)) {
+            throw new \Exception('Primary key was empty.');
+        }
+        if (empty($requestParams)) {
+            throw new \Exception('Request params were empty.');
+        }
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
         if (!$resetCache) {
