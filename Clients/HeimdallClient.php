@@ -68,7 +68,7 @@ class HeimdallClient
     {
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
-        return $this->cache->get($cacheKey);
+        return $this->cache->get(hash('sha256', $cacheKey) . sizeof($featureNameSet));
     }
 
      /**
@@ -185,7 +185,7 @@ class HeimdallClient
                 throw new \Exception("API Responded with - {$content}");
             }
 
-            $this->cache->set($cacheKey, $content, 3600);
+            $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureNameSet), $content, 3600);
 
             return $featureSet;
         } catch (\Exception $e) {
