@@ -13,7 +13,6 @@ use \Memcached;
  */
 class HeimdallClient extends Base
 {
-    protected $apiUrl;
     protected $apiSecret;
     protected $buzz;
     protected $cache;
