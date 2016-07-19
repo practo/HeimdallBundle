@@ -27,19 +27,21 @@ class Base
     
     /**
      * Get Heimdall Uri from domain of request
+     *
+     * @return string - Heimdall base uri
      */
     public function getHeimdallUri()
     {
         $domain = $this->_domain;
         $parts = parse_url($domain);
         $hostParts = explode('.', $parts['host']);
-        $subdomain = $host_parts[0];
+        $subdomain = $hostParts[0];
         $subdomain = explode('-', $subdomain);
         $uri = $parts['scheme'] . '://heimdall';
         if (isset($subdomain[1])) {
             $uri .= '-' . $subdomain[1];
         }
-        $uri .= '.' . $hostParts[1] . '.' . $hostParts[2];
+        $uri .= '.' . $hostParts[1] . '.' . $hostParts[2] . '/v2';
 
         return $uri;
     }
