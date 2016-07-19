@@ -11,7 +11,7 @@ use \Memcached;
 /**
  * Heimdall Client
  */
-class HeimdallClient
+class HeimdallClient extends Base
 {
     protected $apiUrl;
     protected $apiSecret;
@@ -24,13 +24,11 @@ class HeimdallClient
     /**
      * Constructor
      *
-     * @param string $apiUrl       - Heimdall API Base URL
      * @param string $apiSecret    - Heimdall API Secret
      * @param array  $cacheServers - Array of key-values pairs of host & port
      */
-    public function __construct($apiUrl, $apiSecret, $cacheServers)
+    public function __construct($apiSecret, $cacheServers)
     {
-        $this->apiUrl = $apiUrl;
         $this->apiSecret = $apiSecret;
         $this->buzz = new Browser(new Curl());
         $this->cache = new Memcached();
@@ -38,16 +36,6 @@ class HeimdallClient
             $server = [$host, $port];
             $this->cache->addServers(array($server));
         }
-    }
-
-    /**
-     * Set Request
-     *
-     * @param Request $request - Request
-     */
-    public function setRequest(Request $request = null)
-    {
-        $this->request = $request;
     }
 
     protected function generateNonce()
@@ -153,7 +141,7 @@ class HeimdallClient
 
         $nonce = $this->generateNonce();
 
-        $apiUrl = $this->apiUrl . '/get_feature_set_with_status';
+        $apiUrl = $this->getHeimdallUri() . '/get_feature_set_with_status';
 
         $headers = [
             'nonce'        => $nonce,
