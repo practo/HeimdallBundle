@@ -10,7 +10,7 @@ before_install:
   - sudo pip install fabric
 
 install:
-  - sudo pip install -r requirements.lock 
+  - sudo pip install -r requirements.lock
 
 env: PYTHONPATH=.:$PYTHONPATH
 

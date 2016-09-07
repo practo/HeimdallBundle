@@ -24,7 +24,7 @@ class Base
             $this->domain = $this->request->getSchemeAndHttpHost();
         }
     }
-    
+
     /**
      * Get Heimdall Uri from domain of request
      *
