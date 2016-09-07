@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class Base
 {
-    protected $_domain;
+    protected $domain;
     protected $request;
 
     /**
@@ -19,9 +19,9 @@ class Base
     public function setRequestAndDomain($request)
     {
         $this->request = $request;
-        $this->_domain = null;
+        $this->domain = null;
         if ($request instanceof Request) {
-            $this->_domain = $this->request->getSchemeAndHttpHost();
+            $this->domain = $this->request->getSchemeAndHttpHost();
         }
     }
     
@@ -32,7 +32,7 @@ class Base
      */
     public function getHeimdallUri()
     {
-        $domain = $this->_domain;
+        $domain = $this->domain;
         $parts = parse_url($domain);
         $hostParts = explode('.', $parts['host']);
         $subdomain = $hostParts[0];
