@@ -10,7 +10,7 @@ before_install:
   - sudo pip install fabric
 
 install:
-  - sudo pip install -r requirements.lock --download-cache $HOME/.pip-cache
+  - sudo pip install -r requirements.lock 
 
 env: PYTHONPATH=.:$PYTHONPATH
 
@@ -25,5 +25,5 @@ script: fab polish:ci
 cache:
   apt: true
   directories:
-    - $HOME/.pip-cache/
+    - $HOME/.cache/pip
     - $HOME/virtualenv/
