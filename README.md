@@ -67,7 +67,6 @@ Heimdall has 3 required parameters, add them to your `parameters.yml`
 
 ```
 heimdall.api_secret: 'copy-from-heimdall-settings'
-heimdall.product_name: 'RAY'
 heimdall.cache_servers:
     127.0.0.1: 11212 // Memcache host:port
 ```
