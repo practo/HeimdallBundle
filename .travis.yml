@@ -10,7 +10,7 @@ before_install:
   - sudo pip install fabric
 
 install:
-  - sudo pip install -r requirements.lock --download-cache $HOME/.pip-cache
+  - sudo pip install -r requirements.lock
 
 env: PYTHONPATH=.:$PYTHONPATH
 
@@ -24,3 +24,9 @@ script: fab polish:ci
 
 cache:
   apt: true
+  directories:
+    - $HOME/.cache/pip
+
+notifications:
+  webhooks:
+    - https://practotest.getbadges.io/api/app/webhook/65f1fff2-1f99-4d4a-9bea-e053e1c6399f
