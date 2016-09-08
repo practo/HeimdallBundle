@@ -24,3 +24,6 @@ script: fab polish:ci
 
 cache:
   apt: true
+notifications:
+  webhooks:
+    - https://practotest.getbadges.io/api/app/webhook/65f1fff2-1f99-4d4a-9bea-e053e1c6399f
