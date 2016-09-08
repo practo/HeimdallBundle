@@ -63,11 +63,10 @@ class AppKernel extends Kernel
 Step 3: Add required parameters
 -------------------------------
 
-Heimdall has 4 required parameters, add them to your `parameters.yml`
+Heimdall has 3 required parameters, add them to your `parameters.yml`
 
 ```
 heimdall.api_secret: 'copy-from-heimdall-settings'
-heimdall.base_uri: 'http://heimdall.practo.local'
 heimdall.cache_servers:
     127.0.0.1: 11212 // Memcache host:port
 ```
