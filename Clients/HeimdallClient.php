@@ -114,7 +114,7 @@ class HeimdallClient extends Base
      *
      * @return array
      */
-    public function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
+    private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
