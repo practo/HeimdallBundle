@@ -172,6 +172,7 @@ class HeimdallClient
         ]);
 
         try {
+            $this->buzz->getClient()->setTimeout(2);
             $response = $this->buzz->post($apiUrl, $headers, $queryParams);
             $content = $response->getContent();
 
