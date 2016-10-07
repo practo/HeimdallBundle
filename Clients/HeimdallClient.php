@@ -79,6 +79,7 @@ class HeimdallClient
      * @param string  $primaryKey    - Primary key of the cache
      * @param array   $requestParams - User Data parameters to send to Heimdall
      * @param boolean $resetCache    - Will fetch directly from Heimdall API if true
+     * @param int $ttl    - time to live for caching the data
      *
      * @return boolean - Whether or not the feature is enabled
      */
@@ -99,6 +100,7 @@ class HeimdallClient
      * @param string  $primaryKey     - Primary key of the cache
      * @param array   $requestParams  - User Data parameters to send to Heimdall
      * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
+     * @param int $ttl    - time to live for caching the data
      *
      * @return array - list of features with status
      */
@@ -124,6 +126,7 @@ class HeimdallClient
      * @param string  $primaryKey     - Primary key of the cache
      * @param array   $requestParams  - User Data parameters to send to Heimdall
      * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
+     * @param int $ttl    - time to live for caching the data
      *
      * @return array
      */
