@@ -82,7 +82,7 @@ class HeimdallClient
      *
      * @return boolean - Whether or not the feature is enabled
      */
-    public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false)
+    public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
     {
         $featureNameSet = array($featureName);
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
@@ -102,7 +102,7 @@ class HeimdallClient
      *
      * @return array - list of features with status
      */
-    public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
+    public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
     {
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
 
@@ -127,7 +127,7 @@ class HeimdallClient
      *
      * @return array
      */
-    private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
+    private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
@@ -185,7 +185,7 @@ class HeimdallClient
                 throw new \Exception("API Responded with - {$content}");
             }
 
-            $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureNameSet), $content, 3600);
+            $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureNameSet), $content, $ttl);
 
             return $featureSet;
         } catch (\Exception $e) {
