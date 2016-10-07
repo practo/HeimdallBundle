@@ -79,11 +79,11 @@ class HeimdallClient
      * @param string  $primaryKey    - Primary key of the cache
      * @param array   $requestParams - User Data parameters to send to Heimdall
      * @param boolean $resetCache    - Will fetch directly from Heimdall API if true
-     * @param int $ttl    - time to live for caching the data
+     * @param int $ttl               - time to live for caching the data
      *
      * @return boolean - Whether or not the feature is enabled
      */
-    public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
+    public function isFeatureEnabled($productName, $featureName, $primaryKey, $requestParams, $resetCache = false, $ttl = 3600)
     {
         $featureNameSet = array($featureName);
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
@@ -100,11 +100,11 @@ class HeimdallClient
      * @param string  $primaryKey     - Primary key of the cache
      * @param array   $requestParams  - User Data parameters to send to Heimdall
      * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
-     * @param int $ttl    - time to live for caching the data
+     * @param int $ttl                - time to live for caching the data
      *
      * @return array - list of features with status
      */
-    public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
+    public function areFeaturesEnabled($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl = 3600)
     {
         $featureSet = $this->getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache);
 
@@ -126,11 +126,11 @@ class HeimdallClient
      * @param string  $primaryKey     - Primary key of the cache
      * @param array   $requestParams  - User Data parameters to send to Heimdall
      * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
-     * @param int $ttl    - time to live for caching the data
+     * @param int $ttl                - time to live for caching the data
      *
      * @return array
      */
-    private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl=3600)
+    private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false, $ttl = 3600)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
