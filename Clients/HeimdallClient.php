@@ -142,8 +142,7 @@ class HeimdallClient
             if (empty($requestParams)) {
                 throw new \Exception('Request params were empty.');
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             trigger_error('Heimdall Input Validation Failed: ' . $e->getMessage(), E_USER_WARNING);
 
             return [];
