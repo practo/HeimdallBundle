@@ -129,17 +129,24 @@ class HeimdallClient
      */
     private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
-        if (empty($productName)) {
-            throw new \Exception('Product name was empty.');
+        try {
+            if (empty($productName)) {
+                throw new \Exception('Product name was empty.');
+            }
+            if (empty($featureNameSet)) {
+                throw new \Exception('Feature names were empty.');
+            }
+            if (empty($primaryKey)) {
+                throw new \Exception('Primary key was empty.');
+            }
+            if (empty($requestParams)) {
+                throw new \Exception('Request params were empty.');
+            }
         }
-        if (empty($featureNameSet)) {
-            throw new \Exception('Feature names were empty.');
-        }
-        if (empty($primaryKey)) {
-            throw new \Exception('Primary key was empty.');
-        }
-        if (empty($requestParams)) {
-            throw new \Exception('Request params were empty.');
+        catch (\Exception $e) {
+            trigger_error('Heimdall Input Validation Failed: ' . $e->getMessage(), E_USER_WARNING);
+
+            return [];
         }
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
