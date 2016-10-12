@@ -129,17 +129,23 @@ class HeimdallClient
      */
     private function getEnabledFeatureSet($productName, $featureNameSet, $primaryKey, $requestParams, $resetCache = false)
     {
-        if (empty($productName)) {
-            throw new \Exception('Product name was empty.');
-        }
-        if (empty($featureNameSet)) {
-            throw new \Exception('Feature names were empty.');
-        }
-        if (empty($primaryKey)) {
-            throw new \Exception('Primary key was empty.');
-        }
-        if (empty($requestParams)) {
-            throw new \Exception('Request params were empty.');
+        try {
+            if (empty($productName)) {
+                throw new \Exception('Product name was empty.');
+            }
+            if (empty($featureNameSet)) {
+                throw new \Exception('Feature names were empty.');
+            }
+            if (empty($primaryKey)) {
+                throw new \Exception('Primary key was empty.');
+            }
+            if (empty($requestParams)) {
+                throw new \Exception('Request params were empty.');
+            }
+        } catch (\Exception $e) {
+            trigger_error('Heimdall Input Validation Failed: ' . $e->getMessage(), E_USER_WARNING);
+
+            return [];
         }
         $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureNameSet);
 
@@ -172,24 +178,31 @@ class HeimdallClient
         ]);
 
         try {
+            $this->buzz->getClient()->setTimeout(0.2);
             $response = $this->buzz->post($apiUrl, $headers, $queryParams);
             $content = $response->getContent();
 
             if (!$response->isOk()) {
-                throw new \Exception("API Responded with - {$content}");
+                trigger_error("API Responded with - {$content}", E_USER_WARNING);
+
+                return [];
             }
 
             $featureSet = json_decode($content, true);
 
             if (!is_array($featureSet)) {
-                throw new \Exception("API Responded with - {$content}");
+                trigger_error("API Responded with - {$content}", E_USER_WARNING);
+
+                return [];
             }
 
             $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureNameSet), $content, 3600);
 
             return $featureSet;
         } catch (\Exception $e) {
-            throw new \Exception('Heimdall Failed: ' . $e->getMessage());
+            trigger_error('Heimdall Failed: ' . $e->getMessage(), E_USER_WARNING);
+
+            return [];
         }
     }
 }
