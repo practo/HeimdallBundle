@@ -172,24 +172,28 @@ class HeimdallClient
         ]);
 
         try {
+            $this->buzz->getClient()->setTimeout(0.2);
             $response = $this->buzz->post($apiUrl, $headers, $queryParams);
             $content = $response->getContent();
 
             if (!$response->isOk()) {
-                throw new \Exception("API Responded with - {$content}");
+                trigger_error("API Responded with - {$content}", E_USER_WARNING);
+                return [];
             }
 
             $featureSet = json_decode($content, true);
 
             if (!is_array($featureSet)) {
-                throw new \Exception("API Responded with - {$content}");
+                trigger_error("API Responded with - {$content}", E_USER_WARNING);
+                return [];
             }
 
             $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureNameSet), $content, 3600);
 
             return $featureSet;
         } catch (\Exception $e) {
-            throw new \Exception('Heimdall Failed: ' . $e->getMessage());
+            trigger_error('Heimdall Failed: ' . $e->getMessage(), E_USER_WARNING);
+            return [];
         }
     }
 }
