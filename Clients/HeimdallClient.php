@@ -178,6 +178,7 @@ class HeimdallClient
 
             if (!$response->isOk()) {
                 trigger_error("API Responded with - {$content}", E_USER_WARNING);
+
                 return [];
             }
 
@@ -185,6 +186,7 @@ class HeimdallClient
 
             if (!is_array($featureSet)) {
                 trigger_error("API Responded with - {$content}", E_USER_WARNING);
+
                 return [];
             }
 
@@ -193,6 +195,7 @@ class HeimdallClient
             return $featureSet;
         } catch (\Exception $e) {
             trigger_error('Heimdall Failed: ' . $e->getMessage(), E_USER_WARNING);
+
             return [];
         }
     }
