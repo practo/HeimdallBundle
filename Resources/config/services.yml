@@ -2,8 +2,8 @@ services:
   practo_heimdall.heimdall_client:
     class: Practo\HeimdallBundle\Clients\HeimdallClient
     arguments:
-      - %heimdall.base_uri%
-      - %heimdall.api_secret%
-      - %heimdall.cache_servers%
+      - '%heimdall.base_uri%'
+      - '%heimdall.api_secret%'
+      - '%heimdall.cache_servers%'
     calls:
       - [setRequest, ['@?request=']]
