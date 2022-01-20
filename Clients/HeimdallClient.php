@@ -192,4 +192,76 @@ class HeimdallClient
             throw new \Exception('Heimdall Failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Returns the all PracticeIds with the feature passed as argument enabled
+     *
+     * @param string  $productName    - Name of the product of the feature
+     * @param array   $featureName    - List of feature names
+     * @param string  $primaryKey     - Primary key of the cache
+     * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
+     *
+     * @return array
+     */
+    private function getEnabledFeatureSet($productName, $featureId, $primaryKey, $resetCache = false)
+    {
+        if (empty($productName)) {
+            throw new \Exception('Product name was empty.');
+        }
+        if (empty($featureId)) {
+            throw new \Exception('Feature names were empty.');
+        }
+        if (empty($primaryKey)) {
+            throw new \Exception('Primary key was empty.');
+        }
+        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureId);
+
+        if (!$resetCache) {
+            $PracticeIdSet = $this->getFromCache($primaryKey, $featureId);
+
+            if ($PracticeIdSet) {
+                return json_decode($PracticeIdSet, true);
+            }
+        }
+
+        $nonce = $this->generateNonce();
+
+        $apiUrl = $this->apiUrl . '/get_feature_set_with_status';
+
+        $headers = [
+            'nonce'        => $nonce,
+            'X-AUTH-TOKEN' => hash('sha256', $this->apiSecret . $nonce),
+            'Content-type' => 'application/json'
+        ];
+
+        if ($this->request instanceof Request) {
+            $headers['User-Agent'] = $this->request->headers->get('User-Agent');
+        }
+
+        $queryParams = json_encode([
+            'product_name' => $productName,
+            'feature_id'  => $featureId
+        ]);
+
+        try {
+            $response = $this->buzz->post($apiUrl, $headers, $queryParams);
+            $content = $response->getContent();
+
+            if (!$response->isOk()) {
+                throw new \Exception("API Responded with - {$content}");
+            }
+
+            $featureSet = json_decode($content, true);
+
+            if (!is_array($featureSet)) {
+                throw new \Exception("API Responded with - {$content}");
+            }
+
+            $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureId), $content, 3600);
+
+            return $featureSet;
+        } catch (\Exception $e) {
+            throw new \Exception('Heimdall Failed: ' . $e->getMessage());
+        }
+    }
 }
