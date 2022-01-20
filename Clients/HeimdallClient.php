@@ -198,30 +198,16 @@ class HeimdallClient
      *
      * @param string  $productName    - Name of the product of the feature
      * @param array   $featureName    - List of feature names
-     * @param string  $primaryKey     - Primary key of the cache
-     * @param boolean $resetCache     - Will fetch directly from Heimdall API if true
      *
      * @return array
      */
-    private function getEnabledFeatureSet($productName, $featureId, $primaryKey, $resetCache = false)
+    private function getFeatureDetails($productName, $featureId)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
         }
         if (empty($featureId)) {
             throw new \Exception('Feature names were empty.');
-        }
-        if (empty($primaryKey)) {
-            throw new \Exception('Primary key was empty.');
-        }
-        $cacheKey = self::CACHE_KEY_PREFIX . $primaryKey . '_' . json_encode($featureId);
-
-        if (!$resetCache) {
-            $PracticeIdSet = $this->getFromCache($primaryKey, $featureId);
-
-            if ($PracticeIdSet) {
-                return json_decode($PracticeIdSet, true);
-            }
         }
 
         $nonce = $this->generateNonce();
@@ -256,8 +242,6 @@ class HeimdallClient
             if (!is_array($featureSet)) {
                 throw new \Exception("API Responded with - {$content}");
             }
-
-            $this->cache->set(hash('sha256', $cacheKey) . sizeof($featureId), $content, 3600);
 
             return $featureSet;
         } catch (\Exception $e) {
