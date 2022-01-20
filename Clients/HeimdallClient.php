@@ -197,22 +197,22 @@ class HeimdallClient
      * Returns the all PracticeIds with the feature passed as argument enabled
      *
      * @param string  $productName    - Name of the product of the feature
-     * @param array   $featureName    - List of feature names
+     * @param array   $featureName    - Name of the feature
      *
      * @return array
      */
-    private function getFeatureDetails($productName, $featureId)
+    private function getFeatureDetails($productName, $featureName)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
         }
-        if (empty($featureId)) {
+        if (empty($featureName)) {
             throw new \Exception('Feature names were empty.');
         }
 
         $nonce = $this->generateNonce();
 
-        $apiUrl = $this->apiUrl . '/get_feature_set_with_status';
+        $apiUrl = $this->apiUrl . '/get_feature_details';
 
         $headers = [
             'nonce'        => $nonce,
@@ -226,7 +226,7 @@ class HeimdallClient
 
         $queryParams = json_encode([
             'product_name' => $productName,
-            'feature_id'  => $featureId
+            'feature_name'  => $featureName
         ]);
 
         try {
