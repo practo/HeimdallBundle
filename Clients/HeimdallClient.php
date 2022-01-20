@@ -201,7 +201,7 @@ class HeimdallClient
      *
      * @return array
      */
-    private function getFeatureDetails($productName, $featureName)
+    public function getFeatureDetails($productName, $featureName)
     {
         if (empty($productName)) {
             throw new \Exception('Product name was empty.');
