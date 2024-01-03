@@ -17,7 +17,7 @@
     "require": {
         "php": ">=5.4.0",
         "symfony/framework-bundle": ">=2.0",
-        "practo/buzz": "0.16"
+        "practo/buzz": "dev-master"
     },
     "repositories": [
         {
